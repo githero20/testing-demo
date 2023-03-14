@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export function RoleExample() {
   return (
@@ -58,5 +58,51 @@ export function ColorList() {
       <li>Green</li>
       <li>Blue</li>
     </ul>
+  );
+}
+
+export function LoadableColorList() {
+  const [colors, setColors] = useState([]);
+
+  function fakeFetchColors() {
+    return Promise.resolve(["red", "green", "blue"]);
+    // same as fetch("/api/colors"), only this one is simulated to resolve.
+  }
+
+  useEffect(() => {
+    fakeFetchColors().then((c) => setColors(c));
+  }, []);
+
+  const renderedColors = colors.map((color, index) => {
+    return <li key={index}>{color}</li>;
+  });
+
+  return <ul>{renderedColors}</ul>;
+}
+
+export function DataForm() {
+  const [email, setEmail] = useState("asd@asd.com");
+
+  return (
+    <form>
+      <h3>Enter Data</h3>
+
+      <div data-testid="image wrapper">
+        <img alt="data" src="data.jpg" />
+      </div>
+
+      <label htmlFor="email">Email</label>
+      <input
+        id="email"
+        type="email "
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <label htmlFor="color">Color</label>
+      <input id="color" type="text" placeholder="Red" />
+
+      <button title="Click when ready to submit">Submit</button>
+    </form>
   );
 }

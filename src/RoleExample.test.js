@@ -4,6 +4,8 @@ import {
   AccessibleNamesByAriaLabel,
   AccessibleNamesByHTMLFor,
   ColorList,
+  DataForm,
+  LoadableColorList,
   RoleExample,
 } from "./RoleExample";
 
@@ -96,10 +98,8 @@ test("finding 0 elements on query types", async () => {
 test("finding 1 element on query types", async () => {
   render(<ColorList />);
 
-  // expecting it to throw an error because it doesn't exist
   expect(screen.getByRole("list")).toBeInTheDocument();
 
-  // will return null f it doesn't exist
   // eslint-disable-next-line testing-library/prefer-presence-queries
   expect(screen.queryByRole("list")).toBeInTheDocument();
 
@@ -122,4 +122,44 @@ test("finding > 1 element on query types with singular element queries", async (
   }
 
   expect(errorThrown).toEqual(true);
+});
+
+test("finding all elements", async () => {
+  render(<ColorList />);
+
+  expect(screen.getAllByRole("listitem")).toHaveLength(3);
+
+  expect(screen.queryAllByRole("listitem")).toHaveLength(3);
+
+  expect(await screen.findAllByRole("listitem")).toHaveLength(3);
+});
+
+test("favor findBy or findAllBy when data fetching", async () => {
+  render(<LoadableColorList />);
+
+  // will throw an error because we're calling an async function
+  // const els = screen.getAllByRole("listitem");
+
+  const els = await screen.findAllByRole("listitem");
+
+  expect(els).toHaveLength(3);
+});
+
+test("selecting different elements", () => {
+  render(<DataForm />);
+
+  const elements = [
+    screen.getByRole("button"), // most used
+    screen.getByText("Enter Data"), // second most used
+    screen.getByLabelText("Email"),
+    screen.getByPlaceholderText("Red"),
+    screen.getByDisplayValue("asd@asd.com"),
+    screen.getByAltText("data"),
+    screen.getByTitle(/ready to submit/i),
+    screen.getByTestId("image wrapper"), // last option
+  ];
+
+  for (let element of elements) {
+    expect(element).toBeInTheDocument();
+  }
 });
