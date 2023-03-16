@@ -106,3 +106,16 @@ export function DataForm() {
     </form>
   );
 }
+
+export function CustomForm() {
+  return (
+    <div>
+      <button>Return</button>
+      {/* form has no default role, have to use this to get form by role */}
+      <form aria-label="form">
+        <button>Save</button>
+        <button>Cancel</button>
+      </form>
+    </div>
+  );
+}

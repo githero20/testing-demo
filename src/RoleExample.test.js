@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import {
   AccessibleName,
   AccessibleNamesByAriaLabel,
   AccessibleNamesByHTMLFor,
   ColorList,
+  CustomForm,
   DataForm,
   LoadableColorList,
   RoleExample,
@@ -162,4 +163,40 @@ test("selecting different elements", () => {
   for (let element of elements) {
     expect(element).toBeInTheDocument();
   }
+});
+
+test("the form displays 2 buttons", () => {
+  render(<CustomForm />);
+
+  const form = screen.getByRole("form");
+  const buttons = within(form).getAllByRole("button");
+
+  expect(buttons).toHaveLength(2);
+});
+
+// Adding a custom matcher
+const toContainRole = (container, role, quantity = 1) => {
+  const elements = within(container).queryAllByRole(role);
+
+  if (elements.length === quantity) {
+    return {
+      pass: true,
+    };
+  }
+
+  return {
+    pass: false,
+    message: () =>
+      `Expected to find ${quantity} ${role} elements, found ${elements.length} instead`,
+  };
+};
+
+expect.extend({ toContainRole });
+
+test("the form displays 2 buttons with custom elements", () => {
+  render(<CustomForm />);
+
+  const form = screen.getByRole("form");
+
+  expect(form).toContainRole("button", 2);
 });
